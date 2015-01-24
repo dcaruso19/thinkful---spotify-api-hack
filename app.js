@@ -4,7 +4,7 @@
 
 var getTopTracks = function(id) {
 	$.ajax({
-		url: "https://api.spotify.com/v1/artists/4yvcSjfu4PC0CYQyLy4wSq/top-tracks?country=US",
+		url: "https://api.spotify.com/v1/artists/" + id + "/top-tracks?country=US",
 		
 		success: function (data) { 
 
@@ -24,7 +24,73 @@ var getTopTracks = function(id) {
 	
 };
 
-getTopTracks();
+
+
+var doSearch = function(searchText) {
+	$('#results').empty();
+	$.ajax({
+		url: "https://api.spotify.com/v1/search?q=" + searchText + "&type=artist",
+
+		
+
+
+		success: function (data) { 
+
+			var artist;
+
+			for (var i = 0; i < data.artists.items.length; i++) {
+
+				//pick the right artist & assign artist if conditions are good
+				if (searchText.toUpperCase().trim() == data.artists.items[i].name.toUpperCase().trim()) {
+
+					artist = data.artists.items[i];
+				}
+				
+
+			}
+				if (artist!=undefined) {
+				getTopTracks(artist.id);
+				}
+
+				else {
+
+						$("#results").append("There has been an error receiving data from Spotify - please make sure artist name is spelled correctly.")	
+				}
+
+
+				
+		 	},
+
+
+		
+		 error: function (error) {
+		
+				console.log(error)
+
+		
+
+	}
+})
+
+}
+
+
+
+
+
+var performSearch = function ()  {
+
+doSearch($('#search').val())
+
+}
+
+$(document).ready(function() {
+
+$("#submit").click(performSearch)
+
+});
+
+
 
 
 var addTrack = function(track){
@@ -69,56 +135,3 @@ var addTrack = function(track){
 		$(border).append(numbers);
 }
 
-
-// var result = function(item) {
-
-// 	var tracks = $(".track-template").clone();
-// 	tracks.removeAttr("class");
-
-// 	var albumCover = tracks.find(".art img");
-// 	albumCover.attr("src", item.album.images[2].url);
-
-// 	var songName = tracks.find(".track");
-// 	songName.text(item.name);
-
-// 	var preview = tracks.find(".preview a");
-// 	preview.attr("href", item.preview_url);
-
-// 	var songLink = tracks.find(".link a");
-// 	songLink.attr("href", item.external_urls.spotify);
-
-// 	return tracks;
-// };
-
-// var countrySearch = function(artistID, countryName) {
-// 	$.ajax({
-// 		url: "https://api.spotify.com/v1/artists/" + artistID + "/top-tracks?country=" + countryName,
-// 		data: {
-// 			id: artistID,
-// 			country: countryName
-// 			},
-// 		success: function(data) {
-// 			$.each(data.tracks, function(i, item) {
-// 				var info = result(item);
-// 				$(".results").append(info);
-// 				console.log(item.album.images[2].url);
-// 				});
-// 			},
-// 		error: function (error) {
-// 			$(".results").text("Sorry, that artist is not available in that country!");
-// 		}
-
-// 	});
-// };
-
-
-
-// $(document).ready( function() {
-// 	$('.name').submit( function(event){
-// 		// zero out results if previous search has run
-// 		$('.results').empty();
-// 		// get the value of the name the user submitted
-// 		var name = $(this).find("input[name='artist']").val();
-// 		artistSearch(name);
-// 	});
-// });
